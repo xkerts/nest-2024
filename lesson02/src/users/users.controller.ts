@@ -1,50 +1,37 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-
-interface IUser {
-  id: string;
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { UsersService } from './users.service';
+type IUser = {
   name: string;
-}
+  email: string;
+  role: 'INTERN' | 'ENGINEER' | 'ADMIN';
+};
 
 @Controller('users')
 export class UsersController {
-  /*
-  GET /users
-  GET /users/:id
-  POST /users
-  PATCH /users/:id
-  DELETE /users/:id
-  */
+  constructor(private readonly usersService: UsersService) {}
+
   @Get() //Get all users or /users?role=value
-  findAll(@Query('role') role?: 'Intern' | 'Engineer' | 'Admin') {
-    return [];
+  findAll(@Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {
+    return this.usersService.findAll(role);
   }
 
   @Get(':id') //Get a single user
   findOne(@Param('id') id: string) {
-    return { id };
+    return this.usersService.findOne(Number(id));
   }
 
   @Post() //Create a user
   create(@Body() user: IUser) {
-    return user;
+    return this.usersService.create(user);
   }
 
   @Patch(':id') //Update a user
   update(@Param('id') id: string, @Body() userUpdate: IUser) {
-    return { id, ...userUpdate };
+    return this.usersService.update(+id, userUpdate);
   }
 
   @Delete(':id') //Delete a user
   delete(@Param('id') id: string) {
-    return { id };
+    return this.delete(id);
   }
 }
